@@ -62,7 +62,7 @@ while True:
             newPosition = nextState[i][j][action]
             # bellman equation
             newWorld[i, j] += ACTION_PROB * (REWARD + world[newPosition[0], newPosition[1]])
-    if np.sum(np.abs(world - newWorld)) < 1e-4:
+    if np.sum(np.abs(world - newWorld)) < 1e-8:
         print('Random Policy')
         print(newWorld)
         break

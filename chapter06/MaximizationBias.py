@@ -48,11 +48,13 @@ ALPHA = 0.1
 GAMMA = 1.0
 
 # choose an action based on epsilon greedy algorithm
+
 def chooseAction(state, stateActionValues):
-    if np.random.binomial(1, EPSILON) == 1:
+    if np.random.binomial(1, EPSILON) == 1:  # 0.1的概率探索
         return np.random.choice(stateActions[state])
-    else:
+    else:   # 0.9的概率最优Q值
         values_ = stateActionValues[state]
+        return_value = np.random.choice([action_ for action_, value_ in enumerate(values_) if value_ == np.max(values_)])
         return np.random.choice([action_ for action_, value_ in enumerate(values_) if value_ == np.max(values_)])
 
 # take @action in @state, return the reward
@@ -70,10 +72,10 @@ def qLearning(stateActionValues, stateActionValues2=None):
     while currentState != STATE_TERMINAL:
         if stateActionValues2 is None:
             currentAction = chooseAction(currentState, stateActionValues)
-        else:
+        else:   # 这个是双Q-learning
             # derive a action form Q1 and Q2
             currentAction = chooseAction(currentState, [item1 + item2 for item1, item2 in zip(stateActionValues, stateActionValues2)])
-        if currentState == STATE_A and currentAction == ACTION_A_LEFT:
+        if currentState == STATE_A and currentAction == ACTION_A_LEFT:   # 在状态为A时，A=1,动作=0时left+1
             leftCount += 1
         reward = takeAction(currentState, currentAction)
         newState = actionDestination[currentState][currentAction]
@@ -112,7 +114,7 @@ def figure6_8():
         leftCountsDoubleQ_ = [0]
         for ep in range(0, episodes):
             leftCountsQ_.append(leftCountsQ_[-1] + qLearning(stateActionValuesQ))
-            leftCountsDoubleQ_.append(leftCountsDoubleQ_[-1] + qLearning(stateActionValuesDoubleQ1, stateActionValuesDoubleQ2))
+            leftCountsDoubleQ_.append(leftCountsDoubleQ_[-1] + qLearning(stateActionValuesDoubleQ1, stateActionValuesDoubleQ2))  # 这种参数传递方式，是可变的
         del leftCountsQ_[0]
         del leftCountsDoubleQ_[0]
         leftCountsQ += np.asarray(leftCountsQ_, dtype='float') / np.arange(1, episodes + 1)
